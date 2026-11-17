@@ -1,31 +1,32 @@
-# Code Review Checklist — GradeBook
+# Code Review Checklist
 
 ## 1. Correctness
-- [ ] Does the code produce the expected result for valid inputs?
-- [ ] Are boundary cases handled correctly, such as empty data or a score of 0 or 100?
-- [ ] Are invalid scores rejected instead of being accepted silently?
+- [ ] Does the code perform its intended functionality?
+- [ ] Are all conditions and calculations correct?
+- [ ] Are edge cases handled properly?
 
-## 2. Tests
-- [ ] Are tests provided for the new or modified functionality?
-- [ ] Do tests cover normal cases, invalid inputs, and edge cases?
-- [ ] Do tests verify the expected behaviour rather than simply copying the implementation logic?
+## 2. Testing
+- [ ] Are unit tests available for new functionality?
+- [ ] Do tests cover normal and invalid inputs?
+- [ ] Do all existing tests pass?
 
 ## 3. Readability
-- [ ] Are variable and function names clear and meaningful?
-- [ ] Is the code formatted consistently and easy to follow?
-- [ ] Are docstrings or comments provided where they clarify non-obvious behaviour?
+- [ ] Are variable and function names meaningful?
+- [ ] Is the code properly formatted and indented?
+- [ ] Are docstrings or comments provided where necessary?
 
 ## 4. Design
-- [ ] Does the change fit the existing GradeBook structure?
-- [ ] Is unnecessary duplicated code avoided?
-- [ ] Does each function have a clear, focused responsibility?
+- [ ] Does the code follow the existing project structure?
+- [ ] Is unnecessary code duplication avoided?
+- [ ] Are functions small and responsible for clear tasks?
 
-## 5. Risk
-- [ ] Can invalid input cause a crash or an incorrect result?
-- [ ] Could the change break existing functionality?
-- [ ] Could the change cause unnecessary performance or security problems?
+## 5. Risk and Security
+- [ ] Are passwords and sensitive information protected?
+- [ ] Are errors handled safely?
+- [ ] Could the changes negatively affect existing functionality?
 
 ## Lessons Learned
 
-- **Most valuable checklist item:** Checking boundary cases, because values at the limits can reveal logic errors that ordinary tests miss.
-- **Checklist item to add next time:** Check whether error messages clearly explain how invalid input should be corrected.
+The correctness checklist helped identify the most valuable issues because incorrect calculations and missing edge cases can produce unexpected results.
+
+For the next review, I would add a checklist item for checking input validation and compatibility with existing functionality.
