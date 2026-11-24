@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LibraryHub</title>
+</head>
+<body>
+  <h2>LibraryHub Catalog</h2>
+  <p id="status-msg"></p>
+
+  <form id="book-form">
+    <input id="title-input" type="text" placeholder="Title" />
+    <input id="isbn-input" type="text" placeholder="ISBN" />
+    <input id="author-input" type="text" placeholder="Author" />
+    <input id="copies-input" type="number" placeholder="Copies" />
+    <button id="add-btn" type="submit">Add Book</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>ISBN</th>
+        <th>Author</th>
+        <th>Available Copies</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="book-rows"></tbody>
+  </table>
+
+  <script>
+    const msgBox = document.getElementById("status-msg");
+    const rowsBox = document.getElementById("book-rows");
+
+    async function refreshTable() {
+      const res = await fetch("/books");
+      const books = await res.json();
+      rowsBox.innerHTML = "";
+      for (const b of books) {
+        const tr = document.createElement("tr");
+        tr.id = `row-${b.isbn}`;
+        tr.innerHTML = `
+          <td>${b.title}</td>
+          <td>${b.isbn}</td>
+          <td>${b.author}</td>
+          <td class="copies">${b.available_copies}</td>
+          <td><button type="button" class="borrow-btn" data-isbn="${b.isbn}">Borrow</button></td>
+        `;
+        tr.querySelector(".borrow-btn").addEventListener("click", () => handleBorrow(b.isbn));
+        rowsBox.appendChild(tr);
+      }
+    }
+
+    async function handleBorrow(isbn) {
+      const res = await fetch("/members/M1/borrow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isbn }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        msgBox.textContent = (data.error || "").toLowerCase().includes("no copies")
+          ? "no copies available"
+          : (data.error || "Error");
+        return;
+      }
+      msgBox.textContent = "";
+      await refreshTable();
+    }
+
+    document.getElementById("book-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title-input").value.trim();
+      const isbn = document.getElementById("isbn-input").value.trim();
+      const author = document.getElementById("author-input").value.trim();
+      const copies = Number(document.getElementById("copies-input").value);
+
+      if (!title) {
+        msgBox.textContent = "Title is required";
+        return;
+      }
+
+      const res = await fetch("/books", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, isbn, author, total_copies: copies }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        msgBox.textContent = data.error || "Could not add book";
+        return;
+      }
+      msgBox.textContent = "";
+      e.target.reset();
+      await refreshTable();
+    });
+
+    refreshTable();
+  </script>
+</body>
+</html>
